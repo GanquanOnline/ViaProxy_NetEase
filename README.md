@@ -1,19 +1,19 @@
-# GanquanOnline ViaProxy_NetEase
+# ViaProxy_NetEase
 
 Public fork of [ViaVersion/ViaProxy](https://github.com/ViaVersion/ViaProxy) (`main`, based on [`846646b`](https://github.com/ViaVersion/ViaProxy/commit/846646b9fe4520f8d4448435832bdf2812270867)).
 
-This repository is published as **ViaProxy_NetEase** because it carries the NetEase RakNet 8 handshake used with ViaBedrock_NetEase. It is the standalone proxy that lets a Java Edition client join a NetEase Bedrock server. It bundles [GanquanOnline/ViaBedrock_NetEase](https://github.com/GanquanOnline/ViaBedrock_NetEase) and the [GanquanOnline/ViaVersion](https://github.com/GanquanOnline/ViaVersion) shims.
+This repository is the standalone proxy that lets a Java Edition client join a NetEase Bedrock server. It is named **ViaProxy_NetEase** because it uses RakNet protocol 8 when NetEase emulation is enabled in ViaBedrock_NetEase. It bundles ViaBedrock_NetEase and the matching ViaVersion shims.
 
 ## Fork lineage
 
 | This repository | Pulled from | Branch | Upstream commit |
 |---|---|---|---|
-| [GanquanOnline/ViaProxy_NetEase](https://github.com/GanquanOnline/ViaProxy_NetEase) | [ViaVersion/ViaProxy](https://github.com/ViaVersion/ViaProxy) | `main` | `846646b9fe4520f8d4448435832bdf2812270867` |
+| **ViaProxy_NetEase** | [ViaVersion/ViaProxy](https://github.com/ViaVersion/ViaProxy) | `main` | `846646b9fe4520f8d4448435832bdf2812270867` |
 
 ## Related repositories
 
 ```
-Java client  -->  ViaProxy  -->  ViaBedrock  -->  NetEase Bedrock
+Java client  -->  ViaProxy_NetEase  -->  ViaBedrock_NetEase  -->  NetEase Bedrock
                      |              |
                      |              +-- ViaVersion shims
                      +-- optional ViaProxy plugins
@@ -22,17 +22,17 @@ Java client  -->  ViaProxy  -->  ViaBedrock  -->  NetEase Bedrock
 | Repository | Role |
 |---|---|
 | **ViaProxy_NetEase (this repo)** | Process the Java client actually connects to |
-| [ViaBedrock_NetEase](https://github.com/GanquanOnline/ViaBedrock_NetEase) | Packed into the ViaProxy jar; does Java <-> Bedrock translation |
-| [ViaVersion](https://github.com/GanquanOnline/ViaVersion) | Packed into the ViaProxy jar |
-| [ViaBedrockUtility](https://github.com/GanquanOnline/ViaBedrockUtility) | Client mod, not a Gradle dependency of ViaProxy |
+| ViaBedrock_NetEase | Packed into the ViaProxy jar; does Java <-> Bedrock translation |
+| ViaVersion | Packed into the ViaProxy jar |
+| ViaBedrockUtility | Client mod, not a Gradle dependency of ViaProxy |
 
 ## Local changes
 
 - Java 21 (`gradle.properties`)
-- `mavenLocal()` so the proxy can consume the locally published GanquanOnline ViaBedrock/ViaVersion builds
-- When ViaBedrock NetEase emulation is enabled, use `ViaBedrock.getConfig().getNetEaseRakNetProtocolVersion()` (8) instead of the international RakNet version
+- `mavenLocal()` so the proxy can consume locally published ViaBedrock_NetEase / ViaVersion builds
+- When ViaBedrock_NetEase NetEase emulation is enabled, use `ViaBedrock.getConfig().getNetEaseRakNetProtocolVersion()` (8) instead of the international RakNet version
 
-Build with `./gradlew jar` after ViaVersion and ViaBedrock have been published to mavenLocal.
+Build with `./gradlew jar` after ViaVersion and ViaBedrock_NetEase have been published to mavenLocal.
 
 ## License
 
