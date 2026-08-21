@@ -99,13 +99,24 @@ public class BedrockProxyConnection extends ProxyConnection {
                     }
                     return channel;
                 })
-                .option(RakChannelOption.RAK_PROTOCOL_VERSION, ProtocolConstants.BEDROCK_RAKNET_PROTOCOL_VERSION)
+                .option(RakChannelOption.RAK_PROTOCOL_VERSION, resolveRakNetProtocolVersion())
                 .option(RakChannelOption.RAK_COMPATIBILITY_MODE, true)
                 .option(RakChannelOption.RAK_CLIENT_INTERNAL_ADDRESSES, 20)
                 .option(RakChannelOption.RAK_TIME_BETWEEN_SEND_CONNECTION_ATTEMPTS_MS, 500)
                 .option(RakChannelOption.RAK_CONNECT_TIMEOUT, (long) ViaProxy.getConfig().getConnectTimeout())
                 .option(RakChannelOption.RAK_SESSION_TIMEOUT, 30_000L)
                 .option(RakChannelOption.RAK_GUID, ThreadLocalRandom.current().nextLong());
+    }
+
+    private static int resolveRakNetProtocolVersion() {
+        try {
+            final int configured = net.raphimc.viabedrock.ViaBedrock.getConfig().getNetEaseRakNetProtocolVersion();
+            if (net.raphimc.viabedrock.ViaBedrock.getConfig().shouldEmulateNetEaseClient() && configured > 0) {
+                return configured;
+            }
+        } catch (Throwable ignored) {
+        }
+        return ProtocolConstants.BEDROCK_RAKNET_PROTOCOL_VERSION;
     }
 
     protected void initializeNetherNet(final TransportType transportType, final Bootstrap bootstrap) {
