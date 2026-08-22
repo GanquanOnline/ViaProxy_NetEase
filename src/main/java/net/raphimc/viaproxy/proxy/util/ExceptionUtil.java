@@ -31,6 +31,10 @@ public class ExceptionUtil {
     public static void handleNettyException(ChannelHandlerContext ctx, Throwable cause, ProxyConnection proxyConnection, boolean client2Proxy) {
         if (!ctx.channel().isOpen()) return;
         if (cause instanceof ClosedChannelException) return;
+        if (isIgnorableUdpDatagramError(cause)) {
+            Logger.LOGGER.warn("Ignored oversized UDP datagram: {}", cause.toString());
+            return;
+        }
         if (cause instanceof CloseAndReturn) {
             ctx.channel().close();
             return;
@@ -45,6 +49,18 @@ public class ExceptionUtil {
             }
         }
         ctx.channel().close();
+    }
+
+    private static boolean isIgnorableUdpDatagramError(final Throwable throwable) {
+        Throwable cause = throwable;
+        while (cause != null) {
+            final String message = String.valueOf(cause.getMessage()).toLowerCase();
+            if (message.contains("message too long") || message.contains("emsgsize") || message.contains("error(-90)")) {
+                return true;
+            }
+            cause = cause.getCause();
+        }
+        return false;
     }
 
     public static String prettyPrint(Throwable t) {

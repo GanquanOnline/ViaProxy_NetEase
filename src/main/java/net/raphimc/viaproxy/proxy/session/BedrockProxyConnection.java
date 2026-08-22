@@ -35,6 +35,7 @@ import net.raphimc.netminecraft.util.TransportType;
 import net.raphimc.viabedrock.netty.raknet.MessageCodec;
 import net.raphimc.viabedrock.protocol.data.ProtocolConstants;
 import net.raphimc.viaproxy.ViaProxy;
+import net.raphimc.viaproxy.util.logging.Logger;
 import net.raphimc.viaproxy.saves.impl.accounts.BedrockAccount;
 import net.raphimc.viaproxy.util.NetherNetInetSocketAddress;
 import net.raphimc.viaproxy.util.NetherNetJsonRpcAddress;
@@ -46,6 +47,14 @@ import java.net.SocketAddress;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BedrockProxyConnection extends ProxyConnection {
+
+    // Linux EPOLL defaults to FixedRecvByteBufAllocator(2048). Larger UDP datagrams then fail
+    // recvAddress with EMSGSIZE ("Message too long") and ViaProxy treats that as a fatal kick.
+    // UDP GRO can splice many datagrams into one kernel receive, so the per-read allocator has
+    // to be larger than a single 64KiB UDP datagram.
+    private static final int UDP_SOCKET_RCVBUF = 16 * 1024 * 1024;
+    private static final int UDP_RECV_BUFFER_SIZE = 4 * 1024 * 1024;
+    private static final RecvByteBufAllocator UDP_RECV_ALLOCATOR = new FixedRecvByteBufAllocator(UDP_RECV_BUFFER_SIZE);
 
     private boolean useNetherNetDiscovery;
     private boolean useNetherNetXbox;
@@ -89,7 +98,10 @@ public class BedrockProxyConnection extends ProxyConnection {
             transportType = TransportType.NIO; // KQueue doesn't work due to requiring the channel to be bound instead of connected
         }
 
-        final RakChannelFactory<RakClientChannel> channelFactory = RakChannelFactory.client((Class<? extends DatagramChannel>) transportType.udpClientChannelClass());
+        final RakChannelFactory<RakClientChannel> channelFactory = RakChannelFactory.client(
+                (Class<? extends DatagramChannel>) transportType.udpClientChannelClass(),
+                BedrockProxyConnection::configureDatagramChannel
+        );
         bootstrap
                 .group(EventLoops.getClientEventLoop(transportType))
                 .channelFactory(() -> {
@@ -99,6 +111,8 @@ public class BedrockProxyConnection extends ProxyConnection {
                     }
                     return channel;
                 })
+                .option(ChannelOption.RCVBUF_ALLOCATOR, UDP_RECV_ALLOCATOR)
+                .option(ChannelOption.SO_RCVBUF, UDP_SOCKET_RCVBUF)
                 .option(RakChannelOption.RAK_PROTOCOL_VERSION, resolveRakNetProtocolVersion())
                 .option(RakChannelOption.RAK_COMPATIBILITY_MODE, true)
                 .option(RakChannelOption.RAK_CLIENT_INTERNAL_ADDRESSES, 20)
@@ -157,9 +171,44 @@ public class BedrockProxyConnection extends ProxyConnection {
             transportType = TransportType.NIO; // KQueue doesn't work due to requiring the channel to be bound instead of connected
         }
 
+        final Class<? extends DatagramChannel> datagramClass = (Class<? extends DatagramChannel>) transportType.udpClientChannelClass();
         bootstrap
                 .group(EventLoops.getClientEventLoop(transportType))
-                .channel(transportType.udpClientChannelClass());
+                .channelFactory(() -> {
+                    try {
+                        final DatagramChannel datagramChannel = datagramClass.getDeclaredConstructor().newInstance();
+                        configureDatagramChannel(datagramChannel);
+                        return datagramChannel;
+                    } catch (ReflectiveOperationException e) {
+                        throw new RuntimeException("Unable to create UDP channel", e);
+                    }
+                })
+                .option(ChannelOption.RCVBUF_ALLOCATOR, UDP_RECV_ALLOCATOR)
+                .option(ChannelOption.SO_RCVBUF, UDP_SOCKET_RCVBUF);
+    }
+
+    private static void configureDatagramChannel(final DatagramChannel datagramChannel) {
+        datagramChannel.config().setRecvByteBufAllocator(UDP_RECV_ALLOCATOR);
+        datagramChannel.config().setOption(ChannelOption.SO_RCVBUF, UDP_SOCKET_RCVBUF);
+        disableUdpGro(datagramChannel);
+        Logger.LOGGER.info("Configured Bedrock UDP recv allocator={} socketRcvBuf={}", UDP_RECV_BUFFER_SIZE, UDP_SOCKET_RCVBUF);
+    }
+
+    private static void disableUdpGro(final DatagramChannel datagramChannel) {
+        try {
+            final Class<?> epollOption = Class.forName("io.netty.channel.epoll.EpollChannelOption");
+            @SuppressWarnings("unchecked")
+            final ChannelOption<Boolean> udpGro = (ChannelOption<Boolean>) epollOption.getField("UDP_GRO").get(null);
+            datagramChannel.config().setOption(udpGro, Boolean.FALSE);
+        } catch (Throwable ignored) {
+        }
+        try {
+            final Class<?> epollOption = Class.forName("io.netty.channel.epoll.EpollChannelOption");
+            @SuppressWarnings("unchecked")
+            final ChannelOption<Integer> maxDatagram = (ChannelOption<Integer>) epollOption.getField("MAX_DATAGRAM_PAYLOAD_SIZE").get(null);
+            datagramChannel.config().setOption(maxDatagram, UDP_RECV_BUFFER_SIZE);
+        } catch (Throwable ignored) {
+        }
     }
 
 }
