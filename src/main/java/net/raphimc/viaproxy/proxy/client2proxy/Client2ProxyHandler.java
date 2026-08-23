@@ -33,6 +33,7 @@ import net.raphimc.netminecraft.constants.IntendedState;
 import net.raphimc.netminecraft.packet.Packet;
 import net.raphimc.netminecraft.packet.impl.handshaking.C2SHandshakingClientIntentionPacket;
 import net.raphimc.viabedrock.api.BedrockProtocolVersion;
+import net.raphimc.viabedrock.api.util.JavaClientDevice;
 import net.raphimc.vialegacy.api.LegacyProtocolVersion;
 import net.raphimc.viaproxy.ViaProxy;
 import net.raphimc.viaproxy.plugins.events.ConnectEvent;
@@ -123,11 +124,13 @@ public class Client2ProxyHandler extends SimpleChannelInboundHandler<Packet> {
             this.proxyConnection.kickClient("§cYour client version is not supported by ViaProxy!");
         }
 
+        final String clientDeviceSuffix = JavaClientDevice.handshakeSuffix(packet.address);
+        final String handshakeAddress = JavaClientDevice.stripHandshakeSuffix(packet.address);
         final String[] handshakeParts;
         if (ViaProxy.getConfig().shouldPassthroughBungeecordPlayerInfo()) {
-            handshakeParts = packet.address.split("\0");
+            handshakeParts = handshakeAddress.split("\0");
         } else {
-            handshakeParts = new String[]{packet.address};
+            handshakeParts = new String[]{handshakeAddress};
         }
 
         SocketAddress serverAddress = ViaProxy.getConfig().getTargetAddress();
@@ -208,7 +211,7 @@ public class Client2ProxyHandler extends SimpleChannelInboundHandler<Packet> {
             HostAndPort finalClientHandshakeAddress = clientHandshakeAddress;
             CompletableFuture.runAsync(() -> {
                 final ProtocolVersion detectedVersion = ProtocolVersionDetector.get(finalServerAddress, clientVersion);
-                this.connect(finalServerAddress, detectedVersion, clientVersion, packet.intendedState, finalClientHandshakeAddress, userOptions, handshakeParts);
+                this.connect(finalServerAddress, detectedVersion, clientVersion, packet.intendedState, finalClientHandshakeAddress, userOptions, handshakeParts, clientDeviceSuffix);
             }).exceptionally(t -> {
                 if (t instanceof ConnectException || t instanceof UnresolvedAddressException || t instanceof PortUnreachableException) {
                     this.proxyConnection.kickClient("§cCould not connect to the backend server!");
@@ -218,11 +221,11 @@ public class Client2ProxyHandler extends SimpleChannelInboundHandler<Packet> {
                 return null;
             });
         } else {
-            this.connect(serverAddress, serverVersion, clientVersion, packet.intendedState, clientHandshakeAddress, userOptions, handshakeParts);
+            this.connect(serverAddress, serverVersion, clientVersion, packet.intendedState, clientHandshakeAddress, userOptions, handshakeParts, clientDeviceSuffix);
         }
     }
 
-    private void connect(final SocketAddress serverAddress, final ProtocolVersion serverVersion, final ProtocolVersion clientVersion, final IntendedState intendedState, final HostAndPort clientHandshakeAddress, final UserOptions userOptions, final String[] handshakeParts) {
+    private void connect(final SocketAddress serverAddress, final ProtocolVersion serverVersion, final ProtocolVersion clientVersion, final IntendedState intendedState, final HostAndPort clientHandshakeAddress, final UserOptions userOptions, final String[] handshakeParts, final String clientDeviceSuffix) {
         final Supplier<ChannelHandler> handlerSupplier = () -> ViaProxy.EVENT_MANAGER.call(new Proxy2ServerHandlerCreationEvent(new Proxy2ServerHandler(), false)).getHandler();
         final ProxyConnection proxyConnection;
         if (serverVersion.equals(BedrockProtocolVersion.bedrockLatest)) {
@@ -294,7 +297,7 @@ public class Client2ProxyHandler extends SimpleChannelInboundHandler<Packet> {
                         this.proxyConnection.getChannel().writeAndFlush(HAProxyUtil.createMessage(this.proxyConnection.getC2P(), this.proxyConnection.getChannel(), clientVersion)).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
                     }
 
-                    final C2SHandshakingClientIntentionPacket newHandshakePacket = new C2SHandshakingClientIntentionPacket(clientVersion.getOriginalVersion(), String.join("\0", handshakeParts), handshakePort, intendedState);
+                    final C2SHandshakingClientIntentionPacket newHandshakePacket = new C2SHandshakingClientIntentionPacket(clientVersion.getOriginalVersion(), String.join("\0", handshakeParts) + clientDeviceSuffix, handshakePort, intendedState);
                     this.proxyConnection.getChannel().writeAndFlush(newHandshakePacket).addListeners(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE, (ChannelFutureListener) f2 -> {
                         if (f2.isSuccess()) {
                             final UserConnection userConnection = this.proxyConnection.getUserConnection();
