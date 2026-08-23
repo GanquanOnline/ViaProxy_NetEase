@@ -27,6 +27,8 @@ import net.raphimc.viabedrock.netty.raknet.MessageCodec;
 import net.raphimc.viabedrock.protocol.data.enums.bedrock.generated.PacketCompressionAlgorithm;
 import net.raphimc.viabedrock.protocol.provider.NettyPipelineProvider;
 import net.raphimc.viaproxy.proxy.session.ProxyConnection;
+import org.cloudburstmc.netty.channel.raknet.RakChannel;
+import org.cloudburstmc.netty.handler.codec.raknet.common.RakSessionCodec;
 
 import javax.crypto.SecretKey;
 
@@ -57,6 +59,28 @@ public class ViaProxyNettyPipelineProvider extends NettyPipelineProvider {
             } catch (Throwable e) {
                 Sneaky.sneakyThrow(e);
             }
+        }
+    }
+
+    @Override
+    public int getServerTransportLatencyMillis(final UserConnection user) {
+        try {
+            final ProxyConnection proxyConnection = ProxyConnection.fromUserConnection(user);
+            final Channel channel = proxyConnection.getChannel();
+            if (!(channel instanceof RakChannel rakChannel)) {
+                return -1;
+            }
+            final RakSessionCodec session = rakChannel.rakPipeline().get(RakSessionCodec.class);
+            if (session == null) {
+                return -1;
+            }
+            final long ping = session.getPing();
+            if (ping < 0L) {
+                return -1;
+            }
+            return (int) Math.min(Integer.MAX_VALUE, ping);
+        } catch (Throwable ignored) {
+            return -1;
         }
     }
 
