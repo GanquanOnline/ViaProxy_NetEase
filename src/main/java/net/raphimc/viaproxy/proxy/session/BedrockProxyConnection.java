@@ -126,9 +126,12 @@ public class BedrockProxyConnection extends ProxyConnection {
         try {
             final int configured = net.raphimc.viabedrock.ViaBedrock.getConfig().getNetEaseRakNetProtocolVersion();
             if (net.raphimc.viabedrock.ViaBedrock.getConfig().shouldEmulateNetEaseClient() && configured > 0) {
+                Logger.LOGGER.info("Using NetEase RakNet protocol version {}", configured);
                 return configured;
             }
-        } catch (Throwable ignored) {
+            Logger.LOGGER.info("NetEase emulation is disabled; using international RakNet protocol version {}", ProtocolConstants.BEDROCK_RAKNET_PROTOCOL_VERSION);
+        } catch (Throwable t) {
+            Logger.LOGGER.warn("Failed to read ViaBedrock NetEase RakNet version, falling back to international {}", ProtocolConstants.BEDROCK_RAKNET_PROTOCOL_VERSION, t);
         }
         return ProtocolConstants.BEDROCK_RAKNET_PROTOCOL_VERSION;
     }
