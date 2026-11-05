@@ -37,11 +37,11 @@ public class ProtocolVersionDetector {
                 .timeout(TIMEOUT, TIMEOUT)
                 .getSync();
 
-        if (response.version.protocol == clientVersion.getOriginalVersion()) { // If the server is on the same version as the client, we can just connect
+        if (response.version.protocol == clientVersion.getOriginalVersion()) { // 服务端与客户端版本相同时，直接连接即可
             return clientVersion;
         }
 
-        if (ProtocolVersion.isRegistered(response.version.protocol)) { // If the protocol is registered, we can use it
+        if (ProtocolVersion.isRegistered(response.version.protocol)) { // 若该协议已注册，则可直接使用
             return ProtocolVersion.getProtocol(response.version.protocol);
         } else {
             for (ProtocolVersion protocolVersion : ProtocolVersion.getReversedProtocols()) {

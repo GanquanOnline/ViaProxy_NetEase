@@ -77,7 +77,7 @@ public class ProtocolTranslator {
         ProtocolVersion.register(AUTO_DETECT_PROTOCOL);
     }
 
-    // Migrate from old config location (ViaLoader folder) to new one
+    // 把旧配置位置（ViaLoader 目录）迁移到新位置
     private static void moveConfigs() {
         try {
             final File oldConfigDir = new File(ViaProxy.getCwd(), "ViaLoader");

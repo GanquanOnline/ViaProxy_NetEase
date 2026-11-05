@@ -119,7 +119,7 @@ public class GeneralTab extends UITab {
                 }
             });
             this.serverVersion.addActionListener(event -> {
-                if (this.betaCraftAuth == null) return; // This is called when the JComboBox is created (before betaCraftAuth is set)
+                if (this.betaCraftAuth == null) return; // 在创建 JComboBox 时调用（此时 betaCraftAuth 还未设置）
                 if (!(this.serverVersion.getSelectedItem() instanceof ProtocolVersion selectedVersion)) return;
                 if (selectedVersion.olderThanOrEqualTo(LegacyProtocolVersion.c0_28toc0_30)) {
                     this.betaCraftAuth.setEnabled(true);
@@ -153,7 +153,7 @@ public class GeneralTab extends UITab {
             this.betaCraftAuth.setToolTipText(I18n.get("tab.general.betacraft_auth.tooltip"));
             this.betaCraftAuth.setSelected(ViaProxy.getConfig().useBetacraftAuth());
             GBC.create(body).grid(0, gridy++).insets(BODY_BLOCK_PADDING, BORDER_PADDING, 0, 0).anchor(GBC.NORTHWEST).add(this.betaCraftAuth);
-            // Simulate user action on serverVersion to update betaCraftAuth
+            // 模拟用户对 serverVersion 的操作以更新 betaCraftAuth
             final ActionEvent fakeAction = new ActionEvent(this.serverVersion, ActionEvent.ACTION_PERFORMED, "");
             for (ActionListener listener : this.serverVersion.getActionListeners()) {
                 listener.actionPerformed(fakeAction);
@@ -255,7 +255,7 @@ public class GeneralTab extends UITab {
 
             try {
                 try {
-                    if (serverAddress.startsWith("mc://")) { // ClassiCube Direct URL
+                    if (serverAddress.startsWith("mc://")) { // ClassiCube 直连 URL
                         final URI uri = new URI(serverAddress);
 
                         final String[] path = uri.getPath().substring(1).split("/");

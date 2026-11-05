@@ -28,7 +28,7 @@ import net.raphimc.viaproxy.util.logging.Logger;
 public class SaveMigrator {
 
     public static void migrate(final JsonObject jsonObject) {
-        try { // Accounts V3 -> V4 (MinecraftAuth 4 -> 5 migration)
+        try { // 账号数据 V3 -> V4（MinecraftAuth 4 -> 5 迁移）
             if (jsonObject.has("accountsV3")) {
                 final JsonArray oldAccountsArray = jsonObject.getAsJsonArray("accountsV3");
                 final JsonArray newAccountsArray = new JsonArray(oldAccountsArray.size());

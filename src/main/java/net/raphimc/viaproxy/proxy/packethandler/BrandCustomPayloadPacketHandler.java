@@ -50,7 +50,7 @@ public class BrandCustomPayloadPacketHandler extends PacketHandler {
                 } catch (Exception e) {
                     if (this.proxyConnection.getServerVersion().newerThan(ProtocolVersion.v1_20)) {
                         throw e;
-                    } else { // <=1.20 clients ignore errors
+                    } else { // <=1.20 的客户端会忽略错误
                         brand = "Unknown";
                     }
                 }

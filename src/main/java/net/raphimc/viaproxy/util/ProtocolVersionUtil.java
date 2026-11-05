@@ -23,7 +23,7 @@ import net.raphimc.viaproxy.protocoltranslator.ProtocolTranslator;
 public class ProtocolVersionUtil {
 
     public static ProtocolVersion fromNameLenient(final String name) {
-        if (name.equalsIgnoreCase("auto")) { // Short form for auto-detect
+        if (name.equalsIgnoreCase("auto")) { // 自动探测的简写形式
             return ProtocolTranslator.AUTO_DETECT_PROTOCOL;
         }
 

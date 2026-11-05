@@ -56,9 +56,9 @@ public class WildcardDomainParser {
             final int connectPort = Integer.parseInt(matcher.group(2));
             final String versionString = matcher.group(3);
             ProtocolVersion serverVersion;
-            if (versionString != null) { // Version part is optional
+            if (versionString != null) { // 版本部分是可选的
                 serverVersion = ProtocolVersionUtil.fromNameLenient(versionString);
-            } else { // Default to auto-detect
+            } else { // 默认自动探测
                 serverVersion = ProtocolTranslator.AUTO_DETECT_PROTOCOL;
             }
             return new ParsedDomain(AddressUtil.parse(connectAddress + ":" + connectPort, serverVersion), serverVersion);

@@ -27,7 +27,7 @@ import net.raphimc.viaproxy.proxy.session.ProxyConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-// See https://github.com/ViaVersion/ViaFabric/issues/428
+// 见 https://github.com/ViaVersion/ViaFabric/issues/428
 public class FabricParticleApiFixPacketHandler extends PacketHandler {
 
     private static final String REGISTER_CHANNEL = "minecraft:register";
@@ -47,7 +47,7 @@ public class FabricParticleApiFixPacketHandler extends PacketHandler {
                     if (!channels.isEmpty()) {
                         customPayloadPacket.data = String.join("\0", channels).getBytes(StandardCharsets.UTF_8);
                     } else {
-                        return false; // Cancel packet
+                        return false; // 取消数据包
                     }
                 }
             }

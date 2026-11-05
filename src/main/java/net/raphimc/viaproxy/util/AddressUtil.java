@@ -36,16 +36,16 @@ public class AddressUtil {
     private static final Pattern NETHERNET_NETWORK_ID_PATTERN = Pattern.compile("^(?>[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}|\\d+)$", Pattern.CASE_INSENSITIVE);
 
     public static SocketAddress parse(final String serverAddress, final ProtocolVersion version) {
-        if (serverAddress.startsWith("file://") || serverAddress.startsWith("unix://")) { // Unix Socket
+        if (serverAddress.startsWith("file://") || serverAddress.startsWith("unix://")) { // Unix 套接字
             return new DomainSocketAddress(serverAddress.substring(serverAddress.indexOf("://") + 3));
-        } else if (serverAddress.startsWith("nethernet-rpc://")) { // NetherNet JSON-RPC Address
+        } else if (serverAddress.startsWith("nethernet-rpc://")) { // NetherNet JSON-RPC 地址
             final String addressPart = serverAddress.substring(serverAddress.indexOf("://") + 3);
             if (NETHERNET_NETWORK_ID_PATTERN.matcher(addressPart).matches()) {
                 return new NetherNetJsonRpcAddress(addressPart);
             } else {
                 throw new IllegalArgumentException("Invalid NetherNet JSON RPC address");
             }
-        } else if (serverAddress.startsWith("nethernet://")) { // NetherNet Address
+        } else if (serverAddress.startsWith("nethernet://")) { // NetherNet 地址
             final String addressPart = serverAddress.substring(serverAddress.indexOf("://") + 3);
             if (NETHERNET_NETWORK_ID_PATTERN.matcher(addressPart).matches()) {
                 return new NetherNetAddress(addressPart);
@@ -56,7 +56,7 @@ public class AddressUtil {
                 }
                 return new NetherNetInetSocketAddress(hostAndPort.getHost(), hostAndPort.getPortOrDefault(ProtocolConstants.BEDROCK_NETHERNET_DEFAULT_PORT));
             }
-        } else { // IP Address
+        } else { // IP 地址
             final HostAndPort hostAndPort = HostAndPort.fromString(serverAddress);
             if (hostAndPort.getHost().isBlank()) {
                 throw new IllegalArgumentException("Server address cannot be blank");
@@ -103,10 +103,11 @@ public class AddressUtil {
     }
 
     /**
-     * Converts the netty domain socket address to a Java 16 unix domain socket address if possible
+     * 尽可能把 netty 域套接字地址转换为 Java 16 的 unix 域套接字地址
      *
-     * @param address The netty domain socket address
-     * @return The Java 16 unix domain socket address or the original address if it is not a domain socket address
+     * @param address netty 域套接字地址
+     *
+     * @return Java 16 的 unix 域套接字地址；若不是域套接字地址则返回原地址
      */
     public static SocketAddress toJ16UnixSocketAddress(final SocketAddress address) {
         try {
