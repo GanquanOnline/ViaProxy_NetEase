@@ -55,7 +55,7 @@ public class ViaProxyPlatformLoader implements ViaPlatformLoader {
         // ViaBedrock
         Via.getManager().getProviders().use(NettyPipelineProvider.class, new ViaProxyNettyPipelineProvider());
 
-        // ViaProxy plugins
+        // ViaProxy 插件
         ViaProxy.EVENT_MANAGER.call(new ViaLoadingEvent());
     }
 

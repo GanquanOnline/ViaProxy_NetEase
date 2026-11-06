@@ -255,7 +255,7 @@ public class RealmsTab extends UITab {
         final GeneralTab generalTab = this.viaProxyWindow.generalTab;
         if (generalTab.stateButton.isEnabled()) {
             if (!generalTab.stateButton.getText().equals(I18n.get("tab.general.state.start"))) {
-                generalTab.stateButton.doClick(0); // Stop the running proxy
+                generalTab.stateButton.doClick(0); // 停止正在运行的代理
             }
 
             switch (joinInformation.getNetworkProtocol()) {

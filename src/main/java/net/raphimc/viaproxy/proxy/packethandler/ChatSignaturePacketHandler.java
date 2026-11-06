@@ -63,22 +63,22 @@ public class ChatSignaturePacketHandler extends PacketHandler {
                 final ChatSession1_19_3 chatSession = user.get(ChatSession1_19_3.class);
 
                 final ByteBuf oldChatMessage = Unpooled.wrappedBuffer(unknownPacket.data);
-                final String message = PacketTypes.readString(oldChatMessage, 256); // message
-                final long timestamp = oldChatMessage.readLong(); // timestamp
-                final long salt = oldChatMessage.readLong(); // salt
+                final String message = PacketTypes.readString(oldChatMessage, 256); // 消息
+                final long timestamp = oldChatMessage.readLong(); // 时间戳
+                final long salt = oldChatMessage.readLong(); // 盐值
 
                 final MessageMetadata metadata = new MessageMetadata(null, timestamp, salt);
                 final byte[] signature = chatSession.signChatMessage(metadata, message, new PlayerMessageSignature[0]);
 
                 final ByteBuf newChatMessageData = Unpooled.buffer();
-                PacketTypes.writeString(newChatMessageData, message); // message
-                newChatMessageData.writeLong(timestamp); // timestamp
-                newChatMessageData.writeLong(salt); // salt
-                Types.OPTIONAL_SIGNATURE_BYTES.write(newChatMessageData, signature); // signature
-                PacketTypes.writeVarInt(newChatMessageData, 0); // offset
-                Types.ACKNOWLEDGED_BIT_SET.write(newChatMessageData, new BitSet(20)); // acknowledged
+                PacketTypes.writeString(newChatMessageData, message); // 消息
+                newChatMessageData.writeLong(timestamp); // 时间戳
+                newChatMessageData.writeLong(salt); // 盐值
+                Types.OPTIONAL_SIGNATURE_BYTES.write(newChatMessageData, signature); // 签名
+                PacketTypes.writeVarInt(newChatMessageData, 0); // 偏移
+                Types.ACKNOWLEDGED_BIT_SET.write(newChatMessageData, new BitSet(20)); // 已确认
                 if (this.proxyConnection.getClientVersion().newerThanOrEqualTo(ProtocolVersion.v1_21_5)) {
-                    newChatMessageData.writeByte(0); // checksum
+                    newChatMessageData.writeByte(0); // 校验和
                 }
                 unknownPacket.data = ByteBufUtil.getBytes(newChatMessageData);
             }
@@ -98,8 +98,8 @@ public class ChatSignaturePacketHandler extends PacketHandler {
                     if (f.isSuccess()) {
                         final ByteBuf chatSessionUpdate = Unpooled.buffer();
                         PacketTypes.writeVarInt(chatSessionUpdate, this.chatSessionUpdateId);
-                        PacketTypes.writeUuid(chatSessionUpdate, chatSession.getSessionId()); // session id
-                        Types.PROFILE_KEY.write(chatSessionUpdate, chatSession.getProfileKey()); // profile key
+                        PacketTypes.writeUuid(chatSessionUpdate, chatSession.getSessionId()); // 会话 ID
+                        Types.PROFILE_KEY.write(chatSessionUpdate, chatSession.getProfileKey()); // 档案密钥
                         this.proxyConnection.getChannel().writeAndFlush(chatSessionUpdate).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
                     }
                 });

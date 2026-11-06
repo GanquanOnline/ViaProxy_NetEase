@@ -43,8 +43,8 @@ public abstract class MixinProtocol1_18To1_18_2 extends AbstractProtocol<Clientb
         this.registerClientbound(ClientboundPackets1_18.SET_DEFAULT_SPAWN_POSITION, new PacketHandlers() {
             @Override
             public void register() {
-                map(Types.BLOCK_POSITION1_14); // position
-                map(Types.FLOAT); // angle
+                map(Types.BLOCK_POSITION1_14); // 位置
+                map(Types.FLOAT); // 角度
                 handler(wrapper -> wrapper.user().get(SpawnPositionTracker.class).setSpawnPosition(wrapper.get(Types.BLOCK_POSITION1_14, 0), wrapper.get(Types.FLOAT, 0)));
             }
         });

@@ -48,10 +48,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BedrockProxyConnection extends ProxyConnection {
 
-    // Linux EPOLL defaults to FixedRecvByteBufAllocator(2048). Larger UDP datagrams then fail
-    // recvAddress with EMSGSIZE ("Message too long") and ViaProxy treats that as a fatal kick.
-    // UDP GRO can splice many datagrams into one kernel receive, so the per-read allocator has
-    // to be larger than a single 64KiB UDP datagram.
+    // Linux 下 EPOLL 默认使用 FixedRecvByteBufAllocator(2048)。更大的 UDP 数据报会让
+    // recvAddress 以 EMSGSIZE（"Message too long"）失败，而 ViaProxy 会把它当作致命踢出。
+    // UDP GRO 可能把多个数据报合并进一次内核接收，因此每次读取的分配器必须
+    // 大于单个 64KiB UDP 数据报。
     private static final int UDP_SOCKET_RCVBUF = 16 * 1024 * 1024;
     private static final int UDP_RECV_BUFFER_SIZE = 4 * 1024 * 1024;
     private static final RecvByteBufAllocator UDP_RECV_ALLOCATOR = new FixedRecvByteBufAllocator(UDP_RECV_BUFFER_SIZE);
@@ -95,7 +95,7 @@ public class BedrockProxyConnection extends ProxyConnection {
             throw new IllegalArgumentException("Channel type must be a DatagramChannel");
         }
         if (transportType == TransportType.KQUEUE) {
-            transportType = TransportType.NIO; // KQueue doesn't work due to requiring the channel to be bound instead of connected
+            transportType = TransportType.NIO; // KQueue 不可用，因为它要求 channel 处于 bound 状态而不是 connected
         }
 
         final RakChannelFactory<RakClientChannel> channelFactory = RakChannelFactory.client(
@@ -171,7 +171,7 @@ public class BedrockProxyConnection extends ProxyConnection {
 
     protected void initializeRaw(TransportType transportType, final Bootstrap bootstrap) {
         if (transportType == TransportType.KQUEUE) {
-            transportType = TransportType.NIO; // KQueue doesn't work due to requiring the channel to be bound instead of connected
+            transportType = TransportType.NIO; // KQueue 不可用，因为它要求 channel 处于 bound 状态而不是 connected
         }
 
         final Class<? extends DatagramChannel> datagramClass = (Class<? extends DatagramChannel>) transportType.udpClientChannelClass();

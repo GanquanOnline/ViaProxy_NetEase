@@ -206,7 +206,7 @@ public class AccountsTab extends UITab {
         if (!model.isEmpty()) this.markSelected(0);
     }
 
-    private void closePopup() { // Might be getting called multiple times
+    private void closePopup() { // 可能会被多次调用
         if (this.addAccountPopup != null) {
             this.addAccountPopup.markExternalClose();
             this.addAccountPopup.setVisible(false);

@@ -41,8 +41,8 @@ public class SpawnPositionTracker extends StoredObject {
 
     public void sendSpawnPosition() {
         final PacketWrapper setDefaultSpawnPosition = PacketWrapper.create(ClientboundPackets1_18.SET_DEFAULT_SPAWN_POSITION, this.user());
-        setDefaultSpawnPosition.write(Types.BLOCK_POSITION1_14, this.spawnPosition); // position
-        setDefaultSpawnPosition.write(Types.FLOAT, this.angle); // angle
+        setDefaultSpawnPosition.write(Types.BLOCK_POSITION1_14, this.spawnPosition); // 位置
+        setDefaultSpawnPosition.write(Types.FLOAT, this.angle); // 角度
         setDefaultSpawnPosition.send(Protocol1_18To1_18_2.class);
     }
 

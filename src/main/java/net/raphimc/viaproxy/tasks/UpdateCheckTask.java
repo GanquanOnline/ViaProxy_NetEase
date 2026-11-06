@@ -48,7 +48,7 @@ public class UpdateCheckTask implements Runnable {
     @Override
     @SuppressWarnings("UnreachableCode")
     public void run() {
-        if (VERSION.startsWith("$")) return; // Dev env check
+        if (VERSION.startsWith("$")) return; // 开发环境检查
         try {
             URL url = new URL("https://api.github.com/repos/RaphiMC/ViaProxy/releases/latest");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();

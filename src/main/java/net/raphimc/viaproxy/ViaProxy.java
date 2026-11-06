@@ -150,7 +150,7 @@ public class ViaProxy {
             }
             failedCwds.add(potentialCwd);
         }
-        if (CWD == null) { // Backup strategy for weird permission setups: Attempt to write a dummy file to check if the directory is writable
+        if (CWD == null) { // 异常权限配置下的备用策略：尝试写入一个占位文件来检查目录是否可写
             for (File potentialCwd : potentialCwds) {
                 if (potentialCwd.isDirectory()) {
                     try {

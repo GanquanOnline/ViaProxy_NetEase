@@ -138,7 +138,7 @@ public class Client2ProxyHandler extends SimpleChannelInboundHandler<Packet> {
         String classicMpPass = ViaProxy.getConfig().getAccount() instanceof ClassicAccount classicAccount ? classicAccount.getMppass() : null;
 
         if (ViaProxy.getConfig().getWildcardDomainHandling() == ViaProxyConfig.WildcardDomainHandling.PUBLIC) {
-            if (handshakeParts[0].toLowerCase().contains("f2.viaproxy.")) { // Format 2: address.<address>.port.<port>.version.<version>.f2.viaproxy.hostname
+            if (handshakeParts[0].toLowerCase().contains("f2.viaproxy.")) { // 格式 2：address.<address>.port.<port>.version.<version>.f2.viaproxy.hostname
                 WildcardDomainParser.ParsedDomain parsedDomain = WildcardDomainParser.parseFormat2(handshakeParts[0]);
                 if (parsedDomain == null) {
                     this.proxyConnection.kickClient("§cWrong domain syntax! §6Please use:\n§7address.<address>.port.<port>.version.<version>.f2.viaproxy.hostname");
@@ -148,7 +148,7 @@ public class Client2ProxyHandler extends SimpleChannelInboundHandler<Packet> {
                     serverAddress = parsedDomain.address();
                     serverVersion = parsedDomain.version();
                 }
-            } else if (handshakeParts[0].toLowerCase().contains("viaproxy.")) { // Format 1: address_port_version.viaproxy.hostname
+            } else if (handshakeParts[0].toLowerCase().contains("viaproxy.")) { // 格式 1：address_port_version.viaproxy.hostname
                 WildcardDomainParser.ParsedDomain parsedDomain = WildcardDomainParser.parseFormat1(handshakeParts[0]);
                 if (parsedDomain == null) {
                     this.proxyConnection.kickClient("§cWrong domain syntax! §6Please use:\n§7address_port_version.viaproxy.hostname");
@@ -163,7 +163,7 @@ public class Client2ProxyHandler extends SimpleChannelInboundHandler<Packet> {
             }
         } else if (ViaProxy.getConfig().getWildcardDomainHandling() == ViaProxyConfig.WildcardDomainHandling.INTERNAL) {
             final ArrayHelper arrayHelper = ArrayHelper.instanceOf(handshakeParts[0].split("\7"));
-            handshakeParts[0] = arrayHelper.get(0); // Restore the original address
+            handshakeParts[0] = arrayHelper.get(0); // 还原原始地址
             final String versionString = arrayHelper.get(2);
             serverVersion = ProtocolVersionUtil.fromNameLenient(versionString);
             if (serverVersion == null) throw CloseAndReturn.INSTANCE;
@@ -292,7 +292,7 @@ public class Client2ProxyHandler extends SimpleChannelInboundHandler<Packet> {
 
         this.proxyConnection.connectToServer(serverAddress, serverVersion).addListeners((ThrowingChannelFutureListener) f -> {
             if (f.isSuccess()) {
-                f.channel().eventLoop().submit(() -> { // Reschedule so the packets get sent after the channel is fully initialized and active
+                f.channel().eventLoop().submit(() -> { // 重新调度，让数据包在 channel 完全初始化并激活后再发出
                     if (ViaProxy.getConfig().useBackendHaProxy()) {
                         this.proxyConnection.getChannel().writeAndFlush(HAProxyUtil.createMessage(this.proxyConnection.getC2P(), this.proxyConnection.getChannel(), clientVersion)).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
                     }

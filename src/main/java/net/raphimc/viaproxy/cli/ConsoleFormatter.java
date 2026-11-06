@@ -41,52 +41,52 @@ public class ConsoleFormatter {
         return out + convertToAnsi('r');
     }
 
-    //The ANSI codes are an approximation. True color is used to get the exact color.
+    // ANSI 码只是近似。使用真彩色以获得精确颜色。
     private static String convertToAnsi(final char color) {
         switch (Character.toLowerCase(color)) {
-            case '0': //Black
+            case '0': // 黑色
                 return PREFIX + getColor("30", 0x00_00_00) + SUFFIX;
-            case '1': //Dark Blue
+            case '1': // 深蓝色
                 return PREFIX + getColor("34", 0x00_00_AA) + SUFFIX;
-            case '2': //Dark Green
+            case '2': // 深绿色
                 return PREFIX + getColor("32", 0x00_AA_00) + SUFFIX;
-            case '3': //Dark Aqua
+            case '3': // 深青色
                 return PREFIX + getColor("36", 0x00_AA_AA) + SUFFIX;
-            case '4': //Dark Red
+            case '4': // 深红色
                 return PREFIX + getColor("31", 0xAA_00_00) + SUFFIX;
-            case '5': //Dark Purple
+            case '5': // 深紫色
                 return PREFIX + getColor("35", 0xAA_00_AA) + SUFFIX;
-            case '6': //Gold
+            case '6': // 金色
                 return PREFIX + getColor("33", 0xFF_AA_00) + SUFFIX;
-            case '7': //Gray
+            case '7': // 灰色
                 return PREFIX + getColor("37", 0xAA_AA_AA) + SUFFIX;
-            case '8': //Dark Gray
+            case '8': // 深灰色
                 return PREFIX + getColor("90", 0x55_55_55) + SUFFIX;
-            case '9': //Blue
+            case '9': // 蓝色
                 return PREFIX + getColor("94", 0x55_55_FF) + SUFFIX;
-            case 'a': //Green
+            case 'a': // 绿色
                 return PREFIX + getColor("92", 0x55_FF_55) + SUFFIX;
-            case 'b': //Aqua
+            case 'b': // 青色
                 return PREFIX + getColor("96", 0x55_FF_FF) + SUFFIX;
-            case 'c': //Red
+            case 'c': // 红色
                 return PREFIX + getColor("91", 0xFF_55_55) + SUFFIX;
-            case 'd': //Light Purple
+            case 'd': // 浅紫色
                 return PREFIX + getColor("95", 0xFF_55_FF) + SUFFIX;
-            case 'e': //Yellow
+            case 'e': // 黄色
                 return PREFIX + getColor("93", 0xFF_FF_55) + SUFFIX;
-            case 'f': //White
+            case 'f': // 白色
                 return PREFIX + getColor("97", 0xFF_FF_FF) + SUFFIX;
-            case 'k': //Obfuscated
-                return ""; //Not supported in terminal
-            case 'l': //Bold
+            case 'k': // 混淆
+                return ""; // 终端不支持
+            case 'l': // 粗体
                 return PREFIX + "1" + SUFFIX;
-            case 'm': //Strikethrough
+            case 'm': // 删除线
                 return PREFIX + "9" + SUFFIX;
-            case 'n': //Underline
+            case 'n': // 下划线
                 return PREFIX + "4" + SUFFIX;
-            case 'o': //Italic
+            case 'o': // 斜体
                 return PREFIX + "3" + SUFFIX;
-            case 'r': //Reset
+            case 'r': // 重置
             default:
                 return PREFIX + 0 + SUFFIX;
         }
