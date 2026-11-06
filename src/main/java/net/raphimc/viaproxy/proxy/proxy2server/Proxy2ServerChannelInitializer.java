@@ -42,7 +42,7 @@ import net.raphimc.viaproxy.plugins.events.Proxy2ServerChannelInitializeEvent;
 import net.raphimc.viaproxy.plugins.events.types.ITyped;
 import net.raphimc.viaproxy.protocoltranslator.impl.ViaProxyViaCodec;
 import net.raphimc.viaproxy.proxy.session.ProxyConnection;
-import net.raphimc.viaproxy.util.NetherNetInetSocketAddress;
+import net.raphimc.viaproxy.util.address.NetherNetLanAddress;
 
 import java.net.InetSocketAddress;
 import java.util.function.Supplier;
@@ -93,7 +93,7 @@ public class Proxy2ServerChannelInitializer extends MinecraftChannelInitializer 
                 channel.pipeline().addBefore(ViaProxyViaCodec.NAME, PacketCodec.NAME, new PacketCodec());
             } else {
                 channel.pipeline().replace(MCPipeline.SIZER_HANDLER_NAME, DatagramCodec.NAME, new DatagramCodec());
-                if (proxyConnection.getServerAddress() instanceof NetherNetInetSocketAddress) {
+                if (proxyConnection.getServerAddress() instanceof NetherNetLanAddress) {
                     user.getProtocolInfo().getPipeline().add(NetherNetStatusProtocol.INSTANCE);
                 } else if (proxyConnection.getServerAddress() instanceof InetSocketAddress) {
                     user.getProtocolInfo().getPipeline().add(RakNetStatusProtocol.INSTANCE);

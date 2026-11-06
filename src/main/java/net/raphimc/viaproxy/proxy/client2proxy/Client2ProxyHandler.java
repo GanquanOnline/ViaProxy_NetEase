@@ -23,7 +23,8 @@ import com.viaversion.viabackwards.protocol.v1_20_5to1_20_3.storage.CookieStorag
 import com.viaversion.viaversion.api.Via;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
-import dev.kastle.netty.channel.nethernet.config.NetherNetAddress;
+import net.raphimc.viaproxy.util.address.NetherNetXboxAddress;
+import net.raphimc.viaproxy.util.address.NetherNetXboxJsonRpcAddress;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -195,7 +196,8 @@ public class Client2ProxyHandler extends SimpleChannelInboundHandler<Packet> {
         serverVersion = preConnectEvent.getServerVersion();
 
         final boolean isJavaBetaPing = packet.intendedState.getConnectionState() == ConnectionState.STATUS && serverVersion.olderThanOrEqualTo(LegacyProtocolVersion.b1_7tob1_7_3) && !ViaProxy.getConfig().shouldAllowBetaPinging();
-        final boolean isBedrockNetherNetPing = packet.intendedState.getConnectionState() == ConnectionState.STATUS && BedrockProtocolVersion.isBedrock(serverVersion) && serverAddress instanceof NetherNetAddress;
+        // LAN 发现地址仍走 NetherNetStatusProtocol 管线（Proxy2ServerChannelInitializer），只有 Xbox 寻址的 ping 用 MOTD 回。
+        final boolean isBedrockNetherNetPing = packet.intendedState.getConnectionState() == ConnectionState.STATUS && BedrockProtocolVersion.isBedrock(serverVersion) && (serverAddress instanceof NetherNetXboxAddress || serverAddress instanceof NetherNetXboxJsonRpcAddress);
         if (isJavaBetaPing || isBedrockNetherNetPing) {
             if (!ViaProxy.getConfig().getCustomMotd().isBlank()) {
                 this.proxyConnection.kickClient(ViaProxy.getConfig().getCustomMotd());
