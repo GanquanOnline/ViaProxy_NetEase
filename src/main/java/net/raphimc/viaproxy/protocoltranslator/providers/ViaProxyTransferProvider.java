@@ -21,10 +21,10 @@ import com.viaversion.viabackwards.protocol.v1_20_5to1_20_3.provider.TransferPro
 import com.viaversion.viabackwards.protocol.v1_20_5to1_20_3.storage.CookieStorage;
 import com.viaversion.viaversion.api.connection.UserConnection;
 import io.netty.channel.Channel;
-import net.raphimc.netminecraft.util.MinecraftServerAddress;
 import net.raphimc.viaproxy.proxy.session.ProxyConnection;
 import net.raphimc.viaproxy.proxy.util.CloseAndReturn;
 import net.raphimc.viaproxy.proxy.util.TransferDataHolder;
+import net.raphimc.viaproxy.util.AddressUtil;
 
 import java.net.InetSocketAddress;
 
@@ -32,7 +32,7 @@ public class ViaProxyTransferProvider implements TransferProvider {
 
     @Override
     public void connectToServer(UserConnection user, String host, int port) {
-        final InetSocketAddress newAddress = MinecraftServerAddress.ofResolved(host, port);
+        final InetSocketAddress newAddress = AddressUtil.resolveTransferTarget(host, port);
         final Channel channel = ProxyConnection.fromChannel(user.getChannel()).getC2P();
         TransferDataHolder.addTempRedirect(channel, newAddress);
         if (user.has(CookieStorage.class)) {

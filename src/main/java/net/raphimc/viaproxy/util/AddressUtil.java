@@ -103,6 +103,18 @@ public class AddressUtil {
     }
 
     /**
+     * Resolve a Java transfer target. MOT/Waterdog may send a downstream name that is
+     * not in DNS; keep the host so ViaProxy can still rewrite the packet onto itself.
+     */
+    public static InetSocketAddress resolveTransferTarget(final String host, final int port) {
+        try {
+            return MinecraftServerAddress.ofResolved(host, port);
+        } catch (final Exception ignored) {
+            return InetSocketAddress.createUnresolved(host, port);
+        }
+    }
+
+    /**
      * Converts the netty domain socket address to a Java 16 unix domain socket address if possible
      *
      * @param address The netty domain socket address
