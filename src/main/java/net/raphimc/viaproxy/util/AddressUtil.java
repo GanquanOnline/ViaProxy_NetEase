@@ -103,6 +103,18 @@ public class AddressUtil {
     }
 
     /**
+     * 解析 Java 传送目标。MOT/Waterdog 可能下发不在 DNS 里的下游主机名，
+     * 这里保留主机，让 ViaProxy 仍能把传送包改写回自己。
+     */
+    public static InetSocketAddress resolveTransferTarget(final String host, final int port) {
+        try {
+            return MinecraftServerAddress.ofResolved(host, port);
+        } catch (final Exception ignored) {
+            return InetSocketAddress.createUnresolved(host, port);
+        }
+    }
+
+    /**
      * 尽可能把 netty 域套接字地址转换为 Java 16 的 unix 域套接字地址
      *
      * @param address netty 域套接字地址

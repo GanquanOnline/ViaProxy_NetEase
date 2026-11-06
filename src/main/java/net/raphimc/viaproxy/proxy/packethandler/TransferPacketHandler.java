@@ -20,10 +20,10 @@ package net.raphimc.viaproxy.proxy.packethandler;
 import io.netty.channel.ChannelFutureListener;
 import net.raphimc.netminecraft.packet.Packet;
 import net.raphimc.netminecraft.packet.impl.common.S2CTransferPacket;
-import net.raphimc.netminecraft.util.MinecraftServerAddress;
 import net.raphimc.viaproxy.ViaProxy;
 import net.raphimc.viaproxy.proxy.session.ProxyConnection;
 import net.raphimc.viaproxy.proxy.util.TransferDataHolder;
+import net.raphimc.viaproxy.util.AddressUtil;
 import net.raphimc.viaproxy.util.logging.Logger;
 
 import java.net.InetSocketAddress;
@@ -38,7 +38,7 @@ public class TransferPacketHandler extends PacketHandler {
     @Override
     public boolean handleP2S(Packet packet, List<ChannelFutureListener> listeners) {
         if (packet instanceof S2CTransferPacket transferPacket) {
-            final InetSocketAddress newAddress = MinecraftServerAddress.ofResolved(transferPacket.host, transferPacket.port);
+            final InetSocketAddress newAddress = AddressUtil.resolveTransferTarget(transferPacket.host, transferPacket.port);
             TransferDataHolder.addTempRedirect(this.proxyConnection.getC2P(), newAddress);
 
             if (this.proxyConnection.getClientHandshakeAddress() != null) {
