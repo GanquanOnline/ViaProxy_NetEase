@@ -47,16 +47,16 @@ public class SimpleVoiceChatPacketHandler extends PacketHandler {
                 final ByteBuf data = Unpooled.wrappedBuffer(customPayloadPacket.data);
                 try {
                     final ByteBuf newData = Unpooled.buffer();
-                    PacketTypes.writeUuid(newData, PacketTypes.readUuid(data)); // secret
-                    final int port = data.readInt(); // port
+                    PacketTypes.writeUuid(newData, PacketTypes.readUuid(data)); // 密钥
+                    final int port = data.readInt(); // 端口
                     newData.writeInt(port);
-                    PacketTypes.writeUuid(newData, PacketTypes.readUuid(data)); // player uuid
-                    newData.writeByte(data.readByte()); // codec
-                    newData.writeInt(data.readInt()); // mtu size
-                    newData.writeDouble(data.readDouble()); // voice chat distance
-                    newData.writeInt(data.readInt()); // keep alive
-                    newData.writeBoolean(data.readBoolean()); // groups enabled
-                    final String voiceHost = PacketTypes.readString(data, Short.MAX_VALUE); // voice host
+                    PacketTypes.writeUuid(newData, PacketTypes.readUuid(data)); // 玩家 UUID
+                    newData.writeByte(data.readByte()); // 编解码器
+                    newData.writeInt(data.readInt()); // MTU 大小
+                    newData.writeDouble(data.readDouble()); // 语音聊天距离
+                    newData.writeInt(data.readInt()); // 保活
+                    newData.writeBoolean(data.readBoolean()); // 分组功能已启用
+                    final String voiceHost = PacketTypes.readString(data, Short.MAX_VALUE); // 语音主机
                     if (voiceHost.isEmpty()) {
                         if (this.proxyConnection.getServerAddress() instanceof InetSocketAddress serverAddress) {
                             final String newVoiceHost = AddressUtil.toString(new InetSocketAddress(serverAddress.getAddress(), port));

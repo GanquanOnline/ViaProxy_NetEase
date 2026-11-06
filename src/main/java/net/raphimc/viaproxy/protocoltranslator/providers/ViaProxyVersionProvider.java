@@ -45,7 +45,7 @@ public class ViaProxyVersionProvider extends BaseVersionProvider {
         } else if (clientProtocol.getVersionType() == VersionType.RELEASE) {
             if (MCVersion.ALL_VERSIONS.containsKey(clientProtocol.getVersion())) {
                 return clientProtocol;
-            } else { // Version not supported by NetMinecraft
+            } else { // NetMinecraft 不支持的版本
                 return MCVersion.ALL_VERSIONS.keySet().stream().min((o1, o2) -> {
                     final int diff1 = Math.abs(o1 - clientProtocol.getVersion());
                     final int diff2 = Math.abs(o2 - clientProtocol.getVersion());

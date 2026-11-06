@@ -597,13 +597,9 @@ public class ViaProxyConfig {
 
     public enum AuthMethod {
 
-        /**
-         * Use an account for joining the target server (Has to be configured in ViaProxy GUI)
-         */
+        /** 使用账号加入目标服务端（必须在 ViaProxy GUI 中配置） */
         ACCOUNT("tab.general.minecraft_account.option_select_account"),
-        /**
-         * No authentication (Offline mode)
-         */
+        /** 不进行验证（离线模式） */
         NONE("tab.general.minecraft_account.option_no_account");
 
         private final String guiTranslationKey;
@@ -620,17 +616,11 @@ public class ViaProxyConfig {
 
     public enum WildcardDomainHandling {
 
-        /**
-         * No wildcard domain handling
-         */
+        /** 不处理通配符域名 */
         NONE,
-        /**
-         * Public wildcard domain handling
-         */
+        /** 处理公共通配符域名 */
         PUBLIC,
-        /**
-         * Iternal wildcard domain handling
-         */
+        /** 处理内部通配符域名 */
         INTERNAL,
 
     }

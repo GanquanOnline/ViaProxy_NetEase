@@ -26,7 +26,7 @@ import java.util.Scanner;
 public class ConsoleHandler {
 
     public static void hookConsole() {
-        try { // Best way I could find to check if a console is attached to System.in
+        try { // 我能找到的判断控制台是否连接到 System.in 的最好办法
             System.in.available();
         } catch (IOException e) {
             Logger.LOGGER.info("Console input is not available. CLI commands are disabled.");

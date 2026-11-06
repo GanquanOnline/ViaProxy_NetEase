@@ -73,7 +73,7 @@ public class ClassicWorldHeightInjection {
                 wrapper.write(new ChunkType1_17(chunk.getSections().length), chunk);
 
                 final ClassicWorldHeightProvider heightProvider = Via.getManager().getProviders().get(ClassicWorldHeightProvider.class);
-                if (chunk.getSections().length < heightProvider.getMaxChunkSectionCount(wrapper.user())) { // Increase available sections to match new world height
+                if (chunk.getSections().length < heightProvider.getMaxChunkSectionCount(wrapper.user())) { // 增加可用区块段数量以匹配新的世界高度
                     final ChunkSection[] newArray = new ChunkSection[heightProvider.getMaxChunkSectionCount(wrapper.user())];
                     System.arraycopy(chunk.getSections(), 0, newArray, 0, chunk.getSections().length);
                     chunk.setSections(newArray);
@@ -87,12 +87,12 @@ public class ClassicWorldHeightInjection {
 
                 final int[] newBiomeData = new int[chunk.getSections().length * 4 * 4 * 4];
                 System.arraycopy(chunk.getBiomeData(), 0, newBiomeData, 0, chunk.getBiomeData().length);
-                for (int i = 64; i < chunk.getSections().length * 4; i++) { // copy top layer of old biome data all the way to max world height
+                for (int i = 64; i < chunk.getSections().length * 4; i++) { // 把旧生物群系数据的顶层一直复制到最大世界高度
                     System.arraycopy(chunk.getBiomeData(), chunk.getBiomeData().length - 16, newBiomeData, i * 16, 16);
                 }
                 chunk.setBiomeData(newBiomeData);
 
-                chunk.setHeightMap(new CompoundTag()); // rip heightmap :(
+                chunk.setHeightMap(new CompoundTag()); // 高度图没了 :(
             }
         };
     }
@@ -103,12 +103,12 @@ public class ClassicWorldHeightInjection {
             public void register() {
                 map(Types.VAR_INT); // x
                 map(Types.VAR_INT); // y
-                map(Types.BOOLEAN); // trust edges
+                map(Types.BOOLEAN); // 信任边缘
                 handler(wrapper -> {
-                    wrapper.read(Types.VAR_INT); // sky light mask
-                    wrapper.read(Types.VAR_INT); // block light mask
-                    final int emptySkyLightMask = wrapper.read(Types.VAR_INT); // empty sky light mask
-                    final int emptyBlockLightMask = wrapper.read(Types.VAR_INT); // empty block light mask
+                    wrapper.read(Types.VAR_INT); // 天空光照掩码
+                    wrapper.read(Types.VAR_INT); // 方块光照掩码
+                    final int emptySkyLightMask = wrapper.read(Types.VAR_INT); // 空天空光照掩码
+                    final int emptyBlockLightMask = wrapper.read(Types.VAR_INT); // 空方块光照掩码
 
                     final ClassicLevel level = wrapper.user().get(ClassicLevelStorage.class).getClassicLevel();
                     final ClassicWorldHeightProvider heightProvider = Via.getManager().getProviders().get(ClassicWorldHeightProvider.class);
@@ -132,7 +132,7 @@ public class ClassicWorldHeightInjection {
                     } else if (lightArrays.size() == sectionYCount + sectionYCount + 2) {
                         skyLightCount = sectionYCount;
                     }
-                    skyLightCount += 2; // Chunk below 0 and above 255
+                    skyLightCount += 2; // 0 以下和 255 以上的区块
 
                     final BitSet skyLightMask = new BitSet();
                     final BitSet blockLightMask = new BitSet();

@@ -26,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(BlockItemPacketRewriter1_21_11.class)
 public abstract class MixinBlockItemPacketRewriter1_21_11 {
 
-    // The vanilla client uses the game mode from the player list entry to determine the game mode. ViaLegacy uses fake player list entries and thus the check won't work as intended.
+    // 原版客户端从玩家列表条目中读取游戏模式来判断游戏模式。ViaLegacy 使用伪造的玩家列表条目，因此该检查无法按预期生效。
     @Redirect(method = "appendItemDataFixComponents", at = @At(value = "INVOKE", target = "Lcom/viaversion/viaversion/api/protocol/version/ProtocolVersion;olderThanOrEqualTo(Lcom/viaversion/viaversion/api/protocol/version/ProtocolVersion;)Z"))
     private boolean disableOnPre1_8Servers(ProtocolVersion instance, ProtocolVersion other) {
         return instance.equals(other);

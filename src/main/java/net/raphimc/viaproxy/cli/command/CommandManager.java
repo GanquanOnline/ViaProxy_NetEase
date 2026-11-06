@@ -44,14 +44,14 @@ public class CommandManager implements CommandBuilder<CommandExecutor> {
     });
     private final List<Command> commands = new ArrayList<>();
 
-    // Core commands
+    // 核心命令
     private final HelpCommand HelpCommand = new HelpCommand(this);
     private final StopCommand StopCommand = new StopCommand();
     private final ViaVersionCommand ViaVersionCommand = new ViaVersionCommand();
     private final UploadLogCommand UploadLogCommand = new UploadLogCommand();
     private final AccountCommand AccountCommand = new AccountCommand();
 
-    // Debugging commands
+    // 调试命令
     private final GcCommand GcCommand = new GcCommand();
     private final ThreadDumpCommand ThreadDumpCommand = new ThreadDumpCommand();
 
@@ -81,7 +81,7 @@ public class CommandManager implements CommandBuilder<CommandExecutor> {
         try {
             this.dispatcher.execute(message, ConsoleCommandExecutor.INSTANCE);
         } catch (CommandSyntaxException e) {
-            if (e.getMessage().startsWith("Unknown command at position 0")) { // Compat for the old command API
+            if (e.getMessage().startsWith("Unknown command at position 0")) { // 兼容旧的命令 API
                 final String[] parts = message.split(" ");
                 if (parts.length != 0) {
                     final String command = parts[0];

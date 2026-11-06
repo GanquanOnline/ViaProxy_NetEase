@@ -21,14 +21,10 @@ import net.raphimc.netminecraft.netty.connection.NetClient;
 
 public class ProxySessionCreationEvent<T extends NetClient> {
 
-    /**
-     * The proxy session which will be used to connect to the server and store connection related data.
-     */
+    /** 用于连接服务端并存储连接相关数据的代理会话。 */
     private T proxySession;
 
-    /**
-     * Whether the proxy session is a legacy passthrough handler.
-     */
+    /** 该代理会话是否为旧版直通处理器。 */
     private final boolean isLegacyPassthrough;
 
     public ProxySessionCreationEvent(final T proxySession, final boolean isLegacyPassthrough) {

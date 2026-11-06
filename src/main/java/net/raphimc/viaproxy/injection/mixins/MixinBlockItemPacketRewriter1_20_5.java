@@ -148,7 +148,7 @@ public abstract class MixinBlockItemPacketRewriter1_20_5 extends ItemRewriter<Cl
         final IntSet ids = new IntOpenHashSet();
         for (JsonElement element : jsonArray) {
             final String name = element.getAsString();
-            if (name.startsWith("#")) { // Material name
+            if (name.startsWith("#")) { // 材料名称
                 final String material = name.substring(1);
                 for (Map.Entry<String, Map<ProtocolVersion, String>> entry : ViaProxyMappingDataLoader.BLOCK_MATERIALS.entrySet()) {
                     for (Map.Entry<ProtocolVersion, String> materialEntry : entry.getValue().entrySet()) {
@@ -158,9 +158,9 @@ public abstract class MixinBlockItemPacketRewriter1_20_5 extends ItemRewriter<Cl
                         }
                     }
                 }
-            } else if (name.startsWith("-")) { // Block name
+            } else if (name.startsWith("-")) { // 方块名称
                 ids.remove(this.protocol.getMappingData().blockId(name.substring(1)));
-            } else { // Block name
+            } else { // 方块名称
                 ids.add(this.protocol.getMappingData().blockId(name));
             }
         }

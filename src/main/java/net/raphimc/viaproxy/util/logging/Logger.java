@@ -41,7 +41,7 @@ public class Logger {
     public static final PrintStream SYSERR = System.err;
 
     public static void setup() {
-        if (System.console() != null) { // jANSI is the best lib. If there is no console it just segfaults the JVM process. Thanks!
+        if (System.console() != null) { // jANSI 是最好的库。没有控制台时它会直接把 JVM 进程搞崩。多谢！
             AnsiConsole.systemInstall();
         }
         System.setErr(new LoggerPrintStream("STDERR", SYSERR));

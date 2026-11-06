@@ -53,7 +53,7 @@ public class ViaProxyNettyPipelineProvider extends NettyPipelineProvider {
             throw new IllegalStateException("Encryption already enabled");
         }
 
-        if (channel.pipeline().get(MessageCodec.NAME) != null) { // Only enable encryption for RakNet connections
+        if (channel.pipeline().get(MessageCodec.NAME) != null) { // 只对 RakNet 连接启用加密
             try {
                 channel.pipeline().addAfter(MessageCodec.NAME, MCPipeline.ENCRYPTION_HANDLER_NAME, new AesEncryptionCodec(key));
             } catch (Throwable e) {

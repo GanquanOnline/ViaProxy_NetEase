@@ -21,14 +21,10 @@ import io.netty.channel.ChannelHandler;
 
 public class Proxy2ServerHandlerCreationEvent {
 
-    /**
-     * The handler which will be used to handle Proxy<->Server packets.
-     */
+    /** 用于处理 Proxy<->Server 数据包的处理器。 */
     private ChannelHandler handler;
 
-    /**
-     * Whether the handler is a legacy passthrough handler.
-     */
+    /** 该处理器是否为旧版直通处理器。 */
     private final boolean isLegacyPassthrough;
 
     public Proxy2ServerHandlerCreationEvent(final ChannelHandler handler, final boolean isLegacyPassthrough) {
