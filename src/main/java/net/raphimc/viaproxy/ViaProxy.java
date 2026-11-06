@@ -93,6 +93,19 @@ public class ViaProxy {
     }
 
     public static void main(String[] args) throws Throwable {
+        try {
+            start(args);
+        } catch (Throwable t) {
+            // 启动失败必须结束进程：控制台线程是非守护线程，否则会留下既不监听也不退出的僵尸进程
+            Logger.LOGGER.fatal("ViaProxy failed to start", t);
+            if (args.length == 0 && !GraphicsEnvironment.isHeadless()) {
+                ViaProxyWindow.showException(t);
+            }
+            System.exit(1);
+        }
+    }
+
+    private static void start(final String[] args) throws Throwable {
         final IClassProvider classProvider = new GuavaClassPathProvider();
         final TransformerManager transformerManager = new TransformerManager(classProvider);
         transformerManager.addTransformerPreprocessor(new MixinsTranslator());

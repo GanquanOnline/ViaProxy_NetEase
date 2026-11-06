@@ -65,7 +65,7 @@ public class Proxy2ServerChannelInitializer extends MinecraftChannelInitializer 
 
         final ProxyConnection proxyConnection = ProxyConnection.fromChannel(channel);
 
-        if (ViaProxy.getConfig().getBackendProxy() != null && !proxyConnection.getServerVersion().equals(BedrockProtocolVersion.bedrockLatest)) {
+        if (ViaProxy.getConfig().getBackendProxy() != null && !BedrockProtocolVersion.isBedrock(proxyConnection.getServerVersion())) {
             channel.pipeline().addLast(VIAPROXY_PROXY_HANDLER_NAME, ViaProxy.getConfig().getBackendProxy().createNettyProxyHandler());
         }
         if (ViaProxy.getConfig().useBackendHaProxy()) {
@@ -82,7 +82,7 @@ public class Proxy2ServerChannelInitializer extends MinecraftChannelInitializer 
         channel.pipeline().addAfter(ViaProxyViaCodec.NAME, "via-" + MCPipeline.FLOW_CONTROL_HANDLER_NAME, new NoReadFlowControlHandler());
         if (proxyConnection.getServerVersion().olderThanOrEqualTo(LegacyProtocolVersion.r1_6_4)) {
             channel.pipeline().addBefore(MCPipeline.SIZER_HANDLER_NAME, PreNettyLengthCodec.NAME, new PreNettyLengthCodec(user));
-        } else if (proxyConnection.getServerVersion().equals(BedrockProtocolVersion.bedrockLatest)) {
+        } else if (BedrockProtocolVersion.isBedrock(proxyConnection.getServerVersion())) {
             channel.pipeline().remove(MCPipeline.COMPRESSION_HANDLER_NAME);
             channel.pipeline().remove(MCPipeline.ENCRYPTION_HANDLER_NAME);
 

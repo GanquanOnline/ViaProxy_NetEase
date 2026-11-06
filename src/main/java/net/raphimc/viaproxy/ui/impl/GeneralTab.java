@@ -225,7 +225,7 @@ public class GeneralTab extends UITab {
 
     private void start() {
         final Object selectedVersion = this.serverVersion.getSelectedItem();
-        if (!(selectedVersion instanceof ProtocolVersion)) {
+        if (!(selectedVersion instanceof ProtocolVersion selectedProtocolVersion)) {
             ViaProxyWindow.showError(I18n.get("tab.general.error.no_server_version_selected"));
             return;
         }
@@ -235,7 +235,7 @@ public class GeneralTab extends UITab {
 
             ViaProxyWindow.showWarning("<html><div style='text-align: center;'>" + I18n.get("tab.general.warning.ban_warning.line1") + "<br><b>" + I18n.get("tab.general.warning.risk") + "</b></div></html>");
         }
-        if (selectedVersion.equals(BedrockProtocolVersion.bedrockLatest) && ViaProxy.getSaveManager().uiSave.get("notice.bedrock_warning") == null) {
+        if (BedrockProtocolVersion.isBedrock(selectedProtocolVersion) && ViaProxy.getSaveManager().uiSave.get("notice.bedrock_warning") == null) {
             ViaProxy.getSaveManager().uiSave.put("notice.bedrock_warning", "true");
             ViaProxy.getSaveManager().save();
 

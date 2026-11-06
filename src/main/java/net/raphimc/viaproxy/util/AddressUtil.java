@@ -64,12 +64,12 @@ public class AddressUtil {
 
             final int port;
             if (version != null) {
-                port = hostAndPort.getPortOrDefault(version.equals(BedrockProtocolVersion.bedrockLatest) ? ProtocolConstants.BEDROCK_RAKNET_DEFAULT_PORT : 25565);
+                port = hostAndPort.getPortOrDefault(BedrockProtocolVersion.isBedrock(version) ? ProtocolConstants.BEDROCK_RAKNET_DEFAULT_PORT : 25565);
             } else {
                 port = hostAndPort.getPort();
             }
 
-            if (version == null || version.olderThan(LegacyProtocolVersion.r1_3_1tor1_3_2) || version.equals(BedrockProtocolVersion.bedrockLatest)) {
+            if (version == null || version.olderThan(LegacyProtocolVersion.r1_3_1tor1_3_2) || BedrockProtocolVersion.isBedrock(version)) {
                 return new InetSocketAddress(hostAndPort.getHost(), port);
             } else {
                 return MinecraftServerAddress.ofResolved(hostAndPort.getHost(), port);
@@ -95,7 +95,7 @@ public class AddressUtil {
 
     @Deprecated(forRemoval = true)
     public static int getDefaultPort(final ProtocolVersion version) {
-        if (version.equals(BedrockProtocolVersion.bedrockLatest)) {
+        if (BedrockProtocolVersion.isBedrock(version)) {
             return ProtocolConstants.BEDROCK_RAKNET_DEFAULT_PORT;
         }
 

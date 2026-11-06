@@ -195,7 +195,7 @@ public class Client2ProxyHandler extends SimpleChannelInboundHandler<Packet> {
         serverVersion = preConnectEvent.getServerVersion();
 
         final boolean isJavaBetaPing = packet.intendedState.getConnectionState() == ConnectionState.STATUS && serverVersion.olderThanOrEqualTo(LegacyProtocolVersion.b1_7tob1_7_3) && !ViaProxy.getConfig().shouldAllowBetaPinging();
-        final boolean isBedrockNetherNetPing = packet.intendedState.getConnectionState() == ConnectionState.STATUS && serverVersion.equals(BedrockProtocolVersion.bedrockLatest) && serverAddress instanceof NetherNetAddress;
+        final boolean isBedrockNetherNetPing = packet.intendedState.getConnectionState() == ConnectionState.STATUS && BedrockProtocolVersion.isBedrock(serverVersion) && serverAddress instanceof NetherNetAddress;
         if (isJavaBetaPing || isBedrockNetherNetPing) {
             if (!ViaProxy.getConfig().getCustomMotd().isBlank()) {
                 this.proxyConnection.kickClient(ViaProxy.getConfig().getCustomMotd());
@@ -228,7 +228,7 @@ public class Client2ProxyHandler extends SimpleChannelInboundHandler<Packet> {
     private void connect(final SocketAddress serverAddress, final ProtocolVersion serverVersion, final ProtocolVersion clientVersion, final IntendedState intendedState, final HostAndPort clientHandshakeAddress, final UserOptions userOptions, final String[] handshakeParts, final String clientDeviceSuffix) {
         final Supplier<ChannelHandler> handlerSupplier = () -> ViaProxy.EVENT_MANAGER.call(new Proxy2ServerHandlerCreationEvent(new Proxy2ServerHandler(), false)).getHandler();
         final ProxyConnection proxyConnection;
-        if (serverVersion.equals(BedrockProtocolVersion.bedrockLatest)) {
+        if (BedrockProtocolVersion.isBedrock(serverVersion)) {
             proxyConnection = new BedrockProxyConnection(new Proxy2ServerChannelInitializer(handlerSupplier), this.proxyConnection.getC2P());
         } else {
             proxyConnection = new ProxyConnection(new Proxy2ServerChannelInitializer(handlerSupplier), this.proxyConnection.getC2P());
