@@ -15,19 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viaproxy.util;
+package net.raphimc.viaproxy.util.address;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-
-public class NetherNetInetSocketAddress extends InetSocketAddress {
-
-    public NetherNetInetSocketAddress(final InetAddress addr, final int port) {
-        super(addr, port);
-    }
-
-    public NetherNetInetSocketAddress(final String hostname, final int port) {
-        super(hostname, port);
-    }
-
+public interface NetherNetAddress {
 }

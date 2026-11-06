@@ -15,14 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.raphimc.viaproxy.util;
+package net.raphimc.viaproxy.util.address;
 
-import dev.kastle.netty.channel.nethernet.config.NetherNetAddress;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
-public class NetherNetJsonRpcAddress extends NetherNetAddress {
+public class NetherNetLanAddress extends InetSocketAddress implements NetherNetAddress {
 
-    public NetherNetJsonRpcAddress(final String networkId) {
-        super(networkId);
+    public NetherNetLanAddress(final InetAddress addr, final int port) {
+        super(addr, port);
+    }
+
+    public NetherNetLanAddress(final String hostname, final int port) {
+        super(hostname, port);
     }
 
 }

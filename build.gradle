@@ -33,6 +33,15 @@ repositories {
         }
     }
     maven {
+        name = "OpenCollab Snapshots"
+        url = "https://repo.opencollab.dev/maven-snapshots"
+
+        content {
+            includeGroupByRegex "org\\.cloudburstmc\\..+"
+            includeGroup "dev.opencollab"
+        }
+    }
+    maven {
         name = "Minecraft Libraries"
         url = "https://libraries.minecraft.net"
 
@@ -97,16 +106,17 @@ dependencies {
     includeInJar("net.raphimc:MinecraftAuth:5.0.2") {
         exclude group: "com.google.code.gson", module: "gson"
     }
-    includeInJar("dev.kastle.netty:netty-transport-raknet:1.7.3") {
+    // 传输层双栈：RakNet 留 kastle（网易 RakNet 8 / 898 的兼容握手只在这里），
+    // NetherNet 走 Cloudburst（纯 WebRTC + libdatachannel），两者类名无重叠。
+    includeInJar("dev.kastle.netty:netty-transport-raknet:1.7.4") {
         exclude group: "io.netty"
     }
-    includeInJar("dev.kastle.netty:netty-transport-nethernet:1.7.3") {
+    includeInJar("org.cloudburstmc.netty:netty-transport-nethernet:2.0.0.CR6-20261030.131938-23") {
         exclude group: "io.netty"
-        exclude group: "org.bitbucket.b_c", module: "jose4j"
+        exclude group: "org.bouncycastle"
+        exclude group: "dev.opencollab", module: "libdatachannel-java"
     }
-    ["windows-x86_64", "windows-aarch64", "linux-x86_64", "linux-aarch64", "macos-x86_64", "macos-aarch64"].each {
-        includeInJar "dev.kastle.webrtc:webrtc-java:1.0.3:$it"
-    }
+    includeInJar "dev.opencollab:libdatachannel-java-arch-detect:0.24.5.0-20260921.140330-12"
     includeInJar "gs.mclo:api:6.2.1"
     includeInJar "net.lenni0451:optconfig:1.1.1"
 
