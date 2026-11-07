@@ -1,144 +1,71 @@
 # ViaProxy_NetEase
 
-Public fork of [ViaVersion/ViaProxy](https://github.com/ViaVersion/ViaProxy) (`main`, based on [`846646b`](https://github.com/ViaVersion/ViaProxy/commit/846646b9fe4520f8d4448435832bdf2812270867)).
+[![Build](https://github.com/GanquanOnline/ViaProxy_NetEase/actions/workflows/build.yml/badge.svg)](https://github.com/GanquanOnline/ViaProxy_NetEase/actions/workflows/build.yml)
 
-This repository is the standalone proxy that lets a Java Edition client join a NetEase Bedrock server. It is named **ViaProxy_NetEase** because it uses RakNet protocol 8 when NetEase emulation is enabled in ViaBedrock_NetEase. It bundles ViaBedrock_NetEase and the matching ViaVersion shims.
+独立代理：让 Java 版客户端连上基岩服，包括网易基岩服。Java 客户端连本机代理，代理用内置的 ViaBedrock_NetEase 把 Java 协议翻译成基岩协议，再转发到目标服；启用网易仿真时走 RakNet 8。
 
-## Fork lineage
+> **English.** A standalone ViaProxy fork for joining Bedrock servers (including NetEase / China Edition) from a Java Edition client. It bundles ViaBedrock_NetEase and switches to RakNet 8 when NetEase emulation is enabled. Licensed GPL-3.0-or-later.
 
-| This repository | Pulled from | Branch | Upstream commit |
-|---|---|---|---|
-| **ViaProxy_NetEase** | [ViaVersion/ViaProxy](https://github.com/ViaVersion/ViaProxy) | `main` | `846646b9fe4520f8d4448435832bdf2812270867` |
+**状态：整条网易链路仍在开发中**，不建议用于生产环境。
 
-## Related repositories
+## 上游链条
 
-```
-Java client  -->  ViaProxy_NetEase  -->  ViaBedrock_NetEase  -->  NetEase Bedrock
-                     |              |
-                     |              +-- ViaVersion shims
-                     +-- optional ViaProxy plugins
-```
+`ViaVersion/ViaProxy` → **本仓库**
 
-| Repository | Role |
-|---|---|
-| **ViaProxy_NetEase (this repo)** | Process the Java client actually connects to |
-| ViaBedrock_NetEase | Packed into the ViaProxy jar; does Java <-> Bedrock translation |
-| ViaVersion | Packed into the ViaProxy jar |
-| ViaBedrockUtility | Client mod, not a Gradle dependency of ViaProxy |
+内部打包：`ViaVersion`（协议基座，含本地补丁）＋ `ViaBedrock_NetEase`（Java ↔ 基岩翻译）。
 
-## Local changes
+## 支持的版本
 
-- Java 21 (`gradle.properties`)
-- `mavenLocal()` so the proxy can consume locally published ViaBedrock_NetEase / ViaVersion builds
-- When ViaBedrock_NetEase NetEase emulation is enabled, use `ViaBedrock.getConfig().getNetEaseRakNetProtocolVersion()` (8) instead of the international RakNet version
+- **Java 侧**：与上游 ViaProxy 相同的客户端范围，见[上游 README](https://github.com/ViaVersion/ViaProxy#supported-client-versions)
+- **基岩侧**：由打包进来的 ViaBedrock_NetEase 决定
+  - 国际基岩最高 `2225`（1.26.60）
+  - 网易 `898`（`1.21.130_NetEase`）、`860`（`1.21.124_NetEase`），RakNet 8
 
-Build with `./gradlew jar` after ViaVersion and ViaBedrock_NetEase have been published to mavenLocal.
+基岩目标版本在 `viabedrock.yml` 里配，不在 ViaProxy 自己的配置里。
 
-## License
+## 与上游的差异
 
-GPL-3.0-or-later, same as upstream ViaProxy. See [LICENSE](LICENSE).
+- Java 21 工具链
+- 依赖走 `mavenLocal()`，用来吃本地发布的 ViaVersion 与 ViaBedrock_NetEase
+- `includeInJar` 打包 ViaBedrock_NetEase，产物是自带翻译层的单文件 jar
+- 网易仿真开启时 RakNet 版本取 ViaBedrock 配置里的值（默认 8），不写死国际 RakNet
+- 双传输栈：RakNet 走 kastle，NetherNet 走 Cloudburst 2.0.0.CR6
+- 基岩目标判定统一走 `BedrockProtocolVersion.isBedrock`，不再用 `equals(bedrockLatest)`
+- 启动失败直接结束进程，不留半启动的界面
 
----
+## 构建
 
-# ViaProxy
-Standalone proxy which allows players to join EVERY Minecraft server version (Classic, Alpha, Beta, Release, Bedrock)
+需要 JDK 21，按依赖顺序编：
 
-To download the latest version, go to the [Releases section](#executable-jar-file) and download the latest version.  
-Using it is very simple, just run the jar file, and it will start a user interface where everything can be configured.  
-For a full user guide go to the [Usage for Players](#usage-for-players-gui) section or the [Usage for Server Owners](#usage-for-server-owners-config) section.
-
-## Supported Server versions
-- Release (1.0.0 - 26.2)
-- Beta (b1.0 - b1.8.1)
-- Alpha (a1.0.15 - a1.2.6)
-- Classic (c0.0.15 - c0.30 including [CPE](https://wiki.vg/Classic_Protocol_Extension))
-- April Fools (3D Shareware, 20w14infinite, 25w14craftmine)
-- Combat Snapshots (Combat Test 8c)
-- Bedrock Edition 1.26.30 (WIP, [Many features are missing](https://github.com/RaphiMC/ViaBedrock#features))
-
-## Supported Client versions
-- Release (1.7.2 - 26.2)
-- April Fools (3D Shareware, 25w14craftmine)
-- Bedrock Edition (Requires the [Geyser plugin](https://geysermc.org/download))
-- Beta 1.7.3 (Requires the [Beta2Release plugin](https://github.com/ViaVersionAddons/ViaProxyBeta2Release))
-- Classic, Alpha, Beta, Release 1.0 - 1.6.4 (Only passthrough)
-
-ViaProxy supports joining to any of the listed server version from any of the listed client versions.
-
-## Special Features
-- Support for joining online mode servers
-- Support for joining on servers which have chat signing enabled from all listed client versions
-- Supports transfer and cookies for <=1.20.4 clients on 1.20.5+ servers
-- Allows joining Minecraft Realms with any supported client version
-- Supports Simple Voice Chat mod
-
-## Releases
-### Executable Jar File
-If you want the executable jar file you can download a stable release from [GitHub Releases](https://github.com/ViaVersion/ViaProxy/releases/latest) or the latest dev version from [GitHub Actions](https://github.com/RaphiMC/ViaProxy/actions/workflows/build.yml) or the [ViaVersion Jenkins](https://ci.viaversion.com/view/Platforms/job/ViaProxy/).
-
-### Docker Image
-ViaProxy docker images can be found on [GitHub Packages](https://github.com/ViaVersion/ViaProxy/pkgs/container/viaproxy).
-
-To run the latest version of ViaProxy you can use the following command:
 ```bash
-docker run -it -v /path/to/run:/app/run -p 25568:25568 ghcr.io/viaversion/viaproxy:latest
+# 1. 协议基座
+cd ViaVersion && ./gradlew publishToMavenLocal
+
+# 2. 翻译层
+cd ViaBedrock && ./gradlew publishToMavenLocal
+
+# 3. 代理本体
+cd ViaProxy && ./gradlew jar
 ```
-where ``/path/to/run`` is the path where the ViaProxy data should be stored and ``25568`` is the port ViaProxy should listen on.
 
-## Usage for Players (GUI)
-![ViaProxy GUI](https://i.imgur.com/RaDWkbK.png)
-1. Download the latest version from the [Releases section](#executable-jar-file)
-2. Put the jar file into a folder (ViaProxy will generate config files and store some data there)
-3. Run the jar file
-4. Fill in the required fields like server address and version
-5. If you want to join online mode servers, add your Minecraft account in the Accounts tab
-6. Click on "Start"
-7. Join with your Minecraft client on the displayed address
-8. Have fun!
+产物在 `build/libs/ViaProxy-*.jar`，已包含 ViaBedrock 与 ViaVersion，不需要额外装插件。
 
-## Usage for Server owners (Config)
-1. Download the latest version from the [Releases section](#executable-jar-file)
-2. Put the jar file into a folder (ViaProxy will generate config files and store some data there)
-3. Run the jar file (Using ``java -jar ViaProxy-whateverversion.jar config viaproxy.yml``)
-4. ViaProxy now generates a config file called ``viaproxy.yml`` in the same folder and exits
-5. Open the config file and configure the proxy (Most important options are at the top)
-6. Start the proxy using the start command and test whether it works (Join using the server's public address and the bind port you configured)
-7. Have fun!
+## 运行
 
-## Usage for Server owners (CLI)
-1. Download the latest version from the [Releases section](#executable-jar-file)
-2. Put the jar file into a folder (ViaProxy will generate config files and store some data there)
-3. Run the jar file (Using ``java -jar ViaProxy-whateverversion.jar cli --help``)
-4. ViaProxy will print the CLI usage and exit
-5. Configure the proxy and optionally put the finished start command into a script
-6. Start the proxy using the start command and test whether it works (Join using the server's public address and the bind port you configured)
-7. Have fun!
+```bash
+java -jar ViaProxy-*.jar                        # 打开 GUI
+java -jar ViaProxy-*.jar config viaproxy.yml    # 配置文件不存在时生成模板并退出；存在时按该配置启动
+```
 
-### Configuring the protocol translation
-To change ViaProxy settings you can check out the ``viaproxy.yml`` config file. Most of the settings are configurable via the GUI.  
-To change the protocol translation settings/features you can look into the ``ViaLoader`` folder.
-You will find 5 config files there:
-- viaversion.yml (ViaVersion)
-- viabackwards.yml (ViaBackwards)
-- viarewind.yml (ViaRewind)
-- vialegacy.yml (ViaLegacy)
-- viabedrock.yml (ViaBedrock)
+默认监听 `0.0.0.0:25568`，Java 客户端连 `localhost:25568` 即可。网易服还需要在 `viabedrock.yml` 里打开 `netease.enabled`。
 
-### Developer Plugin API
-ViaProxy has a plugin API which allows you to extend and modify the behavior of ViaProxy.  
-Documentation for the plugin API can be found [here](https://github.com/ViaVersion/ViaProxy/wiki/Creating-plugins).  
-A list of plugins can be found [here](https://github.com/ViaVersion/ViaProxy/wiki/Plugins).
+## 许可与署名
 
-## Contributing
-Contributions in the form of pull requests are always welcome.
-Please make sure to keep your code style consistent with the rest of the project and that your code is easily maintainable.
-If you plan to make a large scale changes, please open an issue first or join my discord to discuss it.
+本项目以 **GPL-3.0-or-later** 分发。
 
-### Translations
-If you want to help translating ViaProxy you can do so on [Crowdin](https://crowdin.com/project/viaproxy).
+- `LICENSE` 是 GPLv3 原文，逐字保留：许可证正文本身禁止修改，也不能被替换成别的许可证。
+- 上游版权：ViaProxy 由 RK_01/RaphiMC、ViaVersion 组织及贡献者持有（GPL-3.0）；ViaBedrock 由 RK_01/RaphiMC 及贡献者持有。
+- 本仓库新增与修改部分的版权归 GanquanOnline 贡献者所有，同样按 GPL-3.0-or-later 授权。
+- 按 GPL-3.0 §5(a) 声明：本仓库自 2026 年起修改了上游代码，修改内容见上文“与上游的差异”。分发二进制时必须同时提供对应源码。
 
-## Contact
-If you encounter any issues, please report them on the
-[issue tracker](https://github.com/ViaVersion/ViaProxy/issues).  
-If you just want to talk or need help using ViaProxy feel free to join the ViaVersion
-[Discord](https://discord.gg/viaversion).
+分发本项目的衍生作品请保持 GPL-3.0-or-later，不要改成 MIT、Apache-2.0 等许可证。
